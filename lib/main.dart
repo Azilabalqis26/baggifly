@@ -7,7 +7,7 @@ void main() {
 }
 
 // ============================================================
-//  EDIT THIS PART: put your own details here (About page)
+//  (About page)
 // ============================================================
 class AppInfo {
   static const String appName = 'Baggifly';
@@ -20,7 +20,7 @@ class AppInfo {
 }
 
 // ============================================================
-//  BUSINESS RULES (change here if the lecturer changes the values)
+//  BUSINESS RULES 
 // ============================================================
 class BaggageRules {
   static const double economyAllowanceKg = 20; // economy = 20 kg
@@ -29,8 +29,7 @@ class BaggageRules {
 }
 
 // ============================================================
-//  THEME COLOURS (Lab 5 style: primary, onPrimary, secondary ...)
-//  Pink + Blue
+//  THEME COLOURS
 // ============================================================
 class AppColors {
   static const Color colorPrimary = Color(0xFFDB2F7F); // pink
@@ -370,7 +369,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // Lab 4 exercise: Reset button clears everything
+  // Reset button clears everything
   void resetForm() {
     FocusScope.of(context).unfocus();
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -498,7 +497,7 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 20),
 
-            // Input 2: ticket class (RadioGroup, Lab 4)
+            // Input 2: ticket class 
             const Text(
               'Ticket class',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -595,7 +594,7 @@ class _HomePageState extends State<HomePage> {
     final String taxPercent =
         (BaggageRules.serviceTaxRate * 100).toStringAsFixed(0);
 
-    // small working line for the excess weight row
+    // the excess weight row
     String excessWorking =
         '${fmtKg(r.weight)} - ${fmtKg(r.allowance)} = ${fmtKg(r.rawDifference)}';
     if (r.rawDifference < 0) {
