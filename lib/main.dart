@@ -16,7 +16,7 @@ class AppInfo {
   static const String matricNo = '2025432714';
   static const String course = 'CS251';
   static const String githubUrl =
-  'https://github.com/Azilabalqis26/baggifly.git';
+    'https://github.com/Azilabalqis26/baggifly';
 }
 
 // ============================================================
