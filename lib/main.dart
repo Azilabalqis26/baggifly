@@ -32,14 +32,14 @@ class BaggageRules {
 //  SOFT PINK THEME COLOURS
 // ============================================================
 class AppColors {
-  static const Color colorPrimary = Color(0xFFE0628E); // Soft Rose Pink (Pastel)
+  static const Color colorPrimary = Color(0xFFE0628E); 
   static const Color colorOnPrimary = Color(0xFFFFFFFF);
   static const Color colorSecondary = Color(0xFFE0628E); // Pink theme
   static const Color colorOnSecondary = Color(0xFFFFFFFF);
-  static const Color colorBackground = Color(0xFFFFF4F8); // Creamy Soft Blush Background
-  static const Color colorSoftPink = Color(0xFFFFE5F0); // Pastel Petal Pink for icon containers
-  static const Color colorBorder = Color(0xFFF3C2D6); // Delicate Soft Rose Border
-  static const Color colorSoftBlue = colorSoftPink; // Backward compatibility alias
+  static const Color colorBackground = Color(0xFFFFF4F8); 
+  static const Color colorSoftPink = Color(0xFFFFE5F0); 
+  static const Color colorBorder = Color(0xFFF3C2D6); 
+  static const Color colorSoftBlue = colorSoftPink; 
 }
 
 // ============================================================
