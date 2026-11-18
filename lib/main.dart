@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart'; 
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,9 +14,9 @@ class AppInfo {
   static const String version = '1.0.0';
   static const String authorName = 'NUR AZILA BALQIS BINTI MOHAMAD YASIN';
   static const String matricNo = '2025432714';
-  static const String course = 'CS251';
+  static const String course = 'Bachelor of Computer Science (Netcentric Computing)';
   static const String githubUrl =
-    'https://github.com/Azilabalqis26/baggifly';
+      'https://github.com/Azilabalqis26/baggifly';
 }
 
 // ============================================================
@@ -29,22 +29,18 @@ class BaggageRules {
 }
 
 // ============================================================
-//  THEME COLOURS
+//  SOFT PINK THEME COLOURS
 // ============================================================
 class AppColors {
-  static const Color colorPrimary = Color(0xFFDB2F7F); // pink
+  static const Color colorPrimary = Color(0xFFE0628E); // Soft Rose Pink (Pastel)
   static const Color colorOnPrimary = Color(0xFFFFFFFF);
-  static const Color colorSecondary = Color(0xFF2F6FDE); // blue
+  static const Color colorSecondary = Color(0xFFE0628E); // Pink theme
   static const Color colorOnSecondary = Color(0xFFFFFFFF);
-  static const Color colorBackground = Color(0xFFFFF3F8); // very light pink
-  static const Color colorSoftBlue = Color(0xFFEAF2FF); // very light blue
+  static const Color colorBackground = Color(0xFFFFF4F8); // Creamy Soft Blush Background
+  static const Color colorSoftPink = Color(0xFFFFE5F0); // Pastel Petal Pink for icon containers
+  static const Color colorBorder = Color(0xFFF3C2D6); // Delicate Soft Rose Border
+  static const Color colorSoftBlue = colorSoftPink; // Backward compatibility alias
 }
-
-const LinearGradient appGradient = LinearGradient(
-  colors: [AppColors.colorPrimary, AppColors.colorSecondary],
-  begin: Alignment.centerLeft,
-  end: Alignment.centerRight,
-);
 
 // ============================================================
 //  CALCULATION LOGIC
@@ -141,6 +137,7 @@ class MyApp extends StatelessWidget {
           onPrimary: AppColors.colorOnPrimary,
           secondary: AppColors.colorSecondary,
           onSecondary: AppColors.colorOnSecondary,
+          surface: Colors.white,
         ),
         scaffoldBackgroundColor: AppColors.colorBackground,
       ),
@@ -175,14 +172,11 @@ class _MainShellState extends State<MainShell> {
           AppInfo.appName,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.colorPrimary, // Soft Rose Pink
         foregroundColor: AppColors.colorOnPrimary,
         elevation: 0,
         scrolledUnderElevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(gradient: appGradient),
-        ),
-        // Lab 5: status bar icon colour (white icons on pink/blue)
+        // Status bar icon colour (white icons on soft rose pink)
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.light, // Android
@@ -215,7 +209,7 @@ class _MainShellState extends State<MainShell> {
               20,
               24,
             ),
-            decoration: const BoxDecoration(gradient: appGradient),
+            color: AppColors.colorPrimary,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -237,10 +231,6 @@ class _MainShellState extends State<MainShell> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  'Navigation Menu',
-                  style: TextStyle(color: Colors.white70),
-                ),
               ],
             ),
           ),
@@ -292,6 +282,9 @@ class _HomePageState extends State<HomePage> {
 
   String? selectedClass; // null = nothing selected yet
   BaggageResult? result; // null = nothing to show yet
+  String? weightError;
+  String? ticketClassError;
+  String? rateError;
 
   @override
   void dispose() {
@@ -300,61 +293,57 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  // Show a SnackBar message and clear the old output (Lab 4 style)
-  void showMessage(String text) {
-    setState(() => result = null);
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(text),
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-  }
-
   void calculate() {
     FocusScope.of(context).unfocus(); // hide the keyboard
 
     final String weightText = weightController.text.trim().replaceAll(',', '.');
     final String rateText = rateController.text.trim().replaceAll(',', '.');
 
-    // 1. Baggage weight: empty? not a number? negative?
+    String? newWeightError;
+    String? newTicketClassError;
+    String? newRateError;
+    double? weight;
+    double? rate;
+
+    // 1. Validate baggage weight
     if (weightText.isEmpty) {
-      showMessage('Please enter the baggage weight.');
-      return;
-    }
-    final double? weight = double.tryParse(weightText);
-    if (weight == null || !weight.isFinite) {
-      debugPrint('Invalid weight input: $weightText');
-      showMessage('Baggage weight must be a number.');
-      return;
-    }
-    if (weight < 0) {
-      showMessage('Baggage weight cannot be negative.');
-      return;
+      newWeightError = 'Please enter the baggage weight.';
+    } else {
+      weight = double.tryParse(weightText);
+      if (weight == null || !weight.isFinite) {
+        debugPrint('Invalid weight input: $weightText');
+        newWeightError = 'Baggage weight must be a number.';
+      } else if (weight < 0) {
+        newWeightError = 'Baggage weight cannot be negative.';
+      }
     }
 
-    // 2. Ticket class selected?
+    // 2. Validate ticket class
     if (selectedClass == null) {
-      showMessage('Please select a ticket class.');
-      return;
+      newTicketClassError = 'Please select a ticket class.';
     }
 
-    // 3. Rate per kg: empty? not a number? negative?
+    // 3. Validate excess baggage rate
     if (rateText.isEmpty) {
-      showMessage('Please enter the excess baggage rate per kg.');
-      return;
+      newRateError = 'Please enter the excess baggage rate per kg.';
+    } else {
+      rate = double.tryParse(rateText);
+      if (rate == null || !rate.isFinite) {
+        debugPrint('Invalid rate input: $rateText');
+        newRateError = 'Rate per kg must be a number.';
+      } else if (rate < 0) {
+        newRateError = 'Rate per kg cannot be negative.';
+      }
     }
-    final double? rate = double.tryParse(rateText);
-    if (rate == null || !rate.isFinite) {
-      debugPrint('Invalid rate input: $rateText');
-      showMessage('Rate per kg must be a number.');
-      return;
-    }
-    if (rate < 0) {
-      showMessage('Rate per kg cannot be negative.');
+
+    setState(() {
+      weightError = newWeightError;
+      ticketClassError = newTicketClassError;
+      rateError = newRateError;
+      result = null;
+    });
+
+    if (newWeightError != null || newTicketClassError != null || newRateError != null) {
       return;
     }
 
@@ -362,9 +351,9 @@ class _HomePageState extends State<HomePage> {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     setState(() {
       result = calculateBaggageFee(
-        weight: weight,
+        weight: weight!,
         ticketClass: selectedClass!,
-        ratePerKg: rate,
+        ratePerKg: rate!,
       );
     });
   }
@@ -376,24 +365,29 @@ class _HomePageState extends State<HomePage> {
     weightController.clear();
     rateController.clear();
     setState(() {
+      weightError = null;
+      ticketClassError = null;
+      rateError = null;
       selectedClass = null;
       result = null;
     });
   }
 
-  InputDecoration _inputDecoration(String label, IconData icon) {
+  InputDecoration _inputDecoration(String label, IconData icon, {String? hint, String? errorText}) {
     return InputDecoration(
       labelText: label,
+      hintText: hint,
+      errorText: errorText,
       prefixIcon: Icon(icon, color: AppColors.colorPrimary),
       filled: true,
       fillColor: Colors.white,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: AppColors.colorPrimary.withValues(alpha: 0.35)),
+        borderSide: const BorderSide(color: AppColors.colorBorder),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: AppColors.colorPrimary.withValues(alpha: 0.35)),
+        borderSide: const BorderSide(color: AppColors.colorBorder),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
@@ -426,7 +420,7 @@ class _HomePageState extends State<HomePage> {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: appGradient,
+        color: AppColors.colorPrimary,
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
@@ -489,10 +483,15 @@ class _HomePageState extends State<HomePage> {
             // Input 1: weight
             TextField(
               controller: weightController,
+              onChanged: (_) {
+                if (weightError != null) setState(() => weightError = null);
+              },
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: _inputDecoration(
                 'Baggage weight (kg)',
                 Icons.monitor_weight_outlined,
+                hint: 'e.g. 25.5',
+                errorText: weightError,
               ),
             ),
             const SizedBox(height: 20),
@@ -504,7 +503,10 @@ class _HomePageState extends State<HomePage> {
             ),
             RadioGroup<String>(
               groupValue: selectedClass,
-              onChanged: (v) => setState(() => selectedClass = v),
+              onChanged: (v) => setState(() {
+                selectedClass = v;
+                ticketClassError = null;
+              }),
               child: Column(
                 children: [
                   RadioListTile<String>(
@@ -528,15 +530,28 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
+            if (ticketClassError != null)
+              Padding(
+                padding: const EdgeInsets.only(left: 12, top: 4),
+                child: Text(
+                  ticketClassError!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12),
+                ),
+              ),
             const SizedBox(height: 12),
 
             // Input 3: rate per kg
             TextField(
               controller: rateController,
+              onChanged: (_) {
+                if (rateError != null) setState(() => rateError = null);
+              },
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: _inputDecoration(
                 'Excess baggage rate per kg (RM)',
                 Icons.payments_outlined,
+                hint: 'e.g. 15.50',
+                errorText: rateError,
               ),
             ),
             const SizedBox(height: 22),
@@ -644,7 +659,7 @@ class _HomePageState extends State<HomePage> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                gradient: appGradient,
+                color: AppColors.colorSecondary,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -724,20 +739,20 @@ class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
   Future<void> _openGithub(BuildContext context) async {
-   final Uri uri = Uri.parse(AppInfo.githubUrl);
+    final Uri uri = Uri.parse(AppInfo.githubUrl);
     try {
-       final bool opened =
+      final bool opened =
           await launchUrl(uri, mode: LaunchMode.externalApplication);
-     if (!opened && context.mounted) {
-       _showMessage(context, 'Could not open the GitHub link.');
+      if (!opened && context.mounted) {
+        _showMessage(context, 'Could not open the GitHub link.');
+      }
+    } catch (e) {
+      debugPrint('Cannot open URL: $e');
+      if (context.mounted) {
+        _showMessage(context, 'Could not open the GitHub link.');
+      }
     }
-     } catch (e) {
-       debugPrint('Cannot open URL: $e');
-       if (context.mounted) {
-         _showMessage(context, 'Could not open the GitHub link.');
-       }
-     }
-   }
+  }
 
   void _showMessage(BuildContext context, String text) {
     ScaffoldMessenger.of(context)
@@ -759,7 +774,7 @@ class AboutPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.colorSecondary.withValues(alpha: 0.3),
+                    color: AppColors.colorPrimary.withValues(alpha: 0.25),
                     blurRadius: 18,
                     offset: const Offset(0, 8),
                   ),
@@ -794,12 +809,12 @@ class AboutPage extends StatelessWidget {
           const SizedBox(height: 24),
 
           // Author information
-          Card(
+           Card(
             elevation: 2,
             color: Colors.white,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-            child: const Padding(
+            child: Padding(
               padding: EdgeInsets.all(18),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -830,39 +845,43 @@ class AboutPage extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // // Clickable GitHub repository URL
-           Card(
-           elevation: 2,
-           color: Colors.white,
-           shape:
-           RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-           child: ListTile(
-           key: const Key('githubLink'),
-           contentPadding:
-           const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-           shape: RoundedRectangleBorder(
-           borderRadius: BorderRadius.circular(22),
-           ),
-           leading: const Icon(Icons.code_rounded,
-           color: AppColors.colorSecondary),
-           title: const Text(
-           'GitHub Repository',
-           style: TextStyle(fontWeight: FontWeight.bold),
-           ),
-           subtitle: const Text(
-           AppInfo.githubUrl,
-           style: TextStyle(
-           color: AppColors.colorSecondary,
-           decoration: TextDecoration.underline,
-           decorationColor: AppColors.colorSecondary,
-           ),
-           ),
-           trailing: const Icon(Icons.open_in_new_rounded,
-           color: AppColors.colorSecondary),
-           onTap: () => _openGithub(context),
-           ),
-           ),
-           const SizedBox(height: 28),
+          // Clickable GitHub repository URL
+          Card(
+            elevation: 2,
+            color: Colors.white,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+            child: ListTile(
+              key: const Key('githubLink'),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(22),
+              ),
+              leading: const Icon(
+                Icons.code_rounded,
+                color: AppColors.colorSecondary,
+              ),
+              title: const Text(
+                'GitHub Repository',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: const Text(
+                AppInfo.githubUrl,
+                style: TextStyle(
+                  color: AppColors.colorSecondary,
+                  decoration: TextDecoration.underline,
+                  decorationColor: AppColors.colorSecondary,
+                ),
+              ),
+              trailing: const Icon(
+                Icons.open_in_new_rounded,
+                color: AppColors.colorSecondary,
+              ),
+              onTap: () => _openGithub(context),
+            ),
+          ),
+          const SizedBox(height: 28),
 
           // Copyright notice
           Text(
@@ -903,7 +922,7 @@ class _InfoRow extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppColors.colorSoftBlue,
+              color: AppColors.colorSoftPink,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, size: 20, color: AppColors.colorPrimary),

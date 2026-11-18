@@ -1,30 +1,28 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:baggifly/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  test('Baggage calculation logic unit test', () {
+    // Economy (allowance 20kg), weight 25kg, rate RM 10
+    final result = calculateBaggageFee(
+      weight: 25,
+      ticketClass: 'Economy',
+      ratePerKg: 10,
+    );
+    expect(result.excessWeight, 5.0);
+    expect(result.excessCharge, 50.0);
+    expect(result.serviceTax, 4.0); // 8% of 50
+    expect(result.total, 54.0);
+  });
+
+  testWidgets('Baggifly smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify app title and buttons
+    expect(find.text(AppInfo.appName), findsWidgets);
+    expect(find.text('Calculate'), findsOneWidget);
+    expect(find.text('Reset'), findsOneWidget);
   });
 }
