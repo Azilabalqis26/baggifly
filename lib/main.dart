@@ -512,7 +512,7 @@ class _HomePageState extends State<HomePage> {
                   RadioListTile<String>(
                     title: const Text('Economy'),
                     subtitle: Text(
-                      'Free allowance: ${fmtKg(BaggageRules.economyAllowanceKg)} kg',
+                      'Free Baggage Allowance: ${fmtKg(BaggageRules.economyAllowanceKg)} kg',
                     ),
                     value: 'Economy',
                     activeColor: AppColors.colorPrimary,
@@ -521,7 +521,7 @@ class _HomePageState extends State<HomePage> {
                   RadioListTile<String>(
                     title: const Text('Business'),
                     subtitle: Text(
-                      'Free allowance: ${fmtKg(BaggageRules.businessAllowanceKg)} kg',
+                      'Free Baggage Allowance: ${fmtKg(BaggageRules.businessAllowanceKg)} kg',
                     ),
                     value: 'Business',
                     activeColor: AppColors.colorPrimary,
