@@ -489,7 +489,7 @@ class _HomePageState extends State<HomePage> {
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: _inputDecoration(
                 'Baggage weight (kg)',
-                Icons.monitor_weight_outlined,
+                Icons.luggage,
                 hint: 'e.g. 25.5',
                 errorText: weightError,
               ),
