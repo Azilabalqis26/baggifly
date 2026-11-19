@@ -316,6 +316,9 @@ class _HomePageState extends State<HomePage> {
       } else if (weight < 0) {
         newWeightError = 'Baggage weight cannot be negative.';
       }
+      else if (weight > 200) {
+        newWeightError = 'Maximum baggage weight is 200 kg';
+      }
     }
 
     // 2. Validate ticket class
